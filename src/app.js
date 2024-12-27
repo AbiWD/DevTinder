@@ -2,25 +2,27 @@ const express = require ("express");
 
 const app = express();
 
-app.use(
-    "/user",
-    (req,res,next) => {
-        console.log("Handling the route user 1");
-        // res.send("Yo Yo ");
-        next();
-    },
-    (req,res,next) => {
-        console.log("Handling the route user 2");
-        // res.send("Yo Yo Yooooooooo");
-        next();
-    },
-    (req,res) => {
-        console.log("Handling the route user 3");
-        res.send("Yo Yo Yooo Noooooo");
-    }
-);
+const {adminAuth, userAuth } = require("./Middlewares/auth");
+
+app.get("/admin",adminAuth);
+
+app.post("/user/login",(req,res) => {
+    res.send("User logged in successfully");
+});
+
+app.get("/user",userAuth, (req,res) => {
+    res.send("User is here");
+});
+
+app.get("/admin/getAllData",(req,res) => {
+   res.send("All data sent");
+});
+
+app.get("/admin/deleteUser",(req,res) => {
+    res.send("Deleted a User");
+ });
 
 
 app.listen(3000, () => {
-    console.log("Sever is successfully listeing on port number 3000...");
+    console.log("Sever is successfully  listeing on port number 3000...");
 });
