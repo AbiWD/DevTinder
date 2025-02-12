@@ -5,6 +5,7 @@ const connectionRequestSchema = new mongoose.Schema(
 
     fromUserId:{
         type: mongoose.Schema.Types.ObjectId,
+        ref: "User",// reference to the user collection 
         required: true,
     },
     toUserId:{
@@ -27,7 +28,6 @@ const connectionRequestSchema = new mongoose.Schema(
 
 );
 
-// ConnectionRequest.find({fromUserId: 2343239875, toUserId: 2348349875});
 
 connectionRequestSchema.index({ fromUserId: 1, toUserId: 1});
 
