@@ -58,7 +58,46 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
     }
 });
 
+userRouter.get("/feed",userAuth, async (req,res) =>{
+    try{
+        // console.log("REQ.USER:", req.user); // Debugging Line <<< 
 
+        // if (!req.user) {
+        //     throw new Error("User is undefined. Middleware may not be working correctly.");
+        // }/////////Debugging Line <<<<
+
+        const loggedInUser = req.user;
+
+        //Find all the conncetion requests (sent + received)
+        const connectionRequests = await ConnectionRequest.find({
+            $or: [
+                { fromUserId: loggedInUser._id},
+                { toUserId: loggedInUser._id}
+            ],
+        }).select("fromUserId toUserId");
+
+        const hideUserFromFeed = new Set();
+
+        connectionRequests.forEach((req) => {
+            hideUserFromFeed.add(req.fromUserId.toString());
+            hideUserFromFeed.add(req.toUserId.toString());
+        });
+
+
+        const users = await User.find({
+           $and:[ 
+            {_id: {$nin: Array.from(hideUserFromFeed)}},
+            {_id: {$ne: loggedInUser._id}},
+        ],
+        }).select(USER_SAFE_DATA);
+
+        res.send(users);
+
+    }
+    catch(err){
+        res.status(400).json({message: err.message});
+    }
+});
 
 
 module.exports = userRouter;
